@@ -9,24 +9,26 @@ import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 
+import java.util.List;
+
 public class userpost {
 
     String u_name;
     Bitmap image;
-    int likes;
+    List<String> likedby;
     String postid;
-    public userpost(String u,Bitmap i,int l,String p){
+    public userpost(String u,Bitmap i,List<String> l,String p){
         u_name=u;
         image=i;
-        likes=l;
+        likedby=l;
         postid=p;
     }
     public Bitmap getImage(){
         return image;
     }
 
-    public int getLikes() {
-        return likes;
+    public List<String> getLikes() {
+        return likedby;
     }
 
     public String getPostid() {
@@ -37,8 +39,8 @@ public class userpost {
         this.postid = postid;
     }
 
-    public void setLikes(int likes) {
-        this.likes = likes;
+    public void setLikes(List<String> likes) {
+        this.likedby = likes;
     }
 
     public String getU_name() {

@@ -1,7 +1,9 @@
 package com.example.instagramclone;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.parse.FindCallback;
 import com.parse.Parse;
@@ -34,8 +40,11 @@ import java.util.List;
 
 public class customUserPostView extends ArrayAdapter<userpost>  {
     int likes;
+    List<String> likedby;
     public customUserPostView(Context context, ArrayList<userpost> arrayList){
         super(context,0,arrayList);
+
+
     }
 
     @NonNull
@@ -43,104 +52,118 @@ public class customUserPostView extends ArrayAdapter<userpost>  {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
         // convertView which is recyclable view
-        View currentItemView = convertView;
+        View  currentItemView = convertView;
 
         // of the recyclable view is null then inflate the custom layout for the same
         if (currentItemView == null) {
             currentItemView = LayoutInflater.from(getContext()).inflate(R.layout.row_item, parent, false);
         }
         TextView textView2=currentItemView.findViewById(R.id.likesView);
+
         // get the position of the view from the ArrayAdapter
         userpost currentNumberPosition = getItem(position);
-
         // then according to the position of the view assign the desired image for the same
         ImageView postimage = currentItemView.findViewById(R.id.imageView);
-        /*postimage.setLayoutParams(new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));*/
+
         assert currentNumberPosition != null;
         //postimage.setImageResource(currentNumberPosition.getImage());
         postimage.setImageBitmap(currentNumberPosition.getImage());
         //postimage.setImageResource(R.drawable.instalogo);
         TextView textView1 = currentItemView.findViewById(R.id.textView);
         textView1.setText(currentNumberPosition.getU_name());
-        textView2.setText(currentNumberPosition.getLikes()+" people liked this post");
-        Button button=currentItemView.findViewById(R.id.like);
-        button.setOnClickListener(new View.OnClickListener() {
+        textView2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Toast.makeText(getContext(), currentNumberPosition.getPostid(), Toast.LENGTH_SHORT).show();
-                likes = currentNumberPosition.getLikes();
-                /*if(button.getTag().equals("liked")){
-                    //already liked!
-                    likes=likes-1;
-                    button.setTag("unlike");
-                }else{*/
-                likes = likes + 1;
-                //button.setTag("liked");
-
-                textView2.setText(likes + " liked this post");
-
-                ParseQuery<ParseObject> query1=ParseQuery.getQuery("Image");
-                query1.whereEqualTo("objectId",currentNumberPosition.getPostid());
-                query1.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
-                        if(e==null){
-                            if(objects.size()>0){
-                                for(ParseObject object:objects){
-                                    String value=object.getString("likedby");
-                                    Log.i("this",value);
-                                    String newvalue=" ";
-                                    if(object.getString("likedby").isEmpty()){
-                                         newvalue=ParseUser.getCurrentUser().getUsername();
-                                    }
-                                    else{
-                                         newvalue=","+ ParseUser.getCurrentUser().getUsername();
-                                         Log.i("thi",newvalue);
-                                    }
-                                    value=value+newvalue;
-                                    String[] arr=value.split(",");
-                                    likes=arr.length;
-                                    Toast.makeText(getContext(),value, Toast.LENGTH_SHORT).show();
-                                }
-
-
-                            }
-                        }
-                    }
-                });
-
-                /*ParseQuery<ParseObject> query=ParseQuery.getQuery("Image");
+                ParseQuery<ParseObject> query=ParseQuery.getQuery("Image");
                 query.whereEqualTo("objectId",currentNumberPosition.getPostid());
+                Log.i("this",currentNumberPosition.getPostid());
                 query.findInBackground(new FindCallback<ParseObject>() {
                     @Override
                     public void done(List<ParseObject> objects, ParseException e) {
                         if(e==null){
+                            List liked=new ArrayList();
                             if(objects.size()>0){
                                 for(ParseObject object:objects){
-                                    object.put("likes",likes);
-                                    object.saveInBackground(new SaveCallback() {
-                                        @Override
-                                        public void done(ParseException e) {
-                                            Toast.makeText(getContext(), "done", Toast.LENGTH_SHORT).show();
-                                            //textView2.setText(object.getInt("likes")+" people liked this post");
+                                    liked=object.getList("Likedby");
 
-                                        }
-                                    });
                                 }
+                                /*liked_popup lp=new liked_popup();
+                                lp.show(getActivity().getSupportFragmentManager(), "this");*/
+                                Toast.makeText(getContext(), liked.toString(), Toast.LENGTH_SHORT).show();
                             }
+
+
                         }
+
                     }
 
-                });*/
+                });
+
 
             }
         });
+        List<String> no_likes=currentNumberPosition.getLikes();
+        textView2.setText(no_likes.size()+" people liked this post");
+        ImageView button=currentItemView.findViewById(R.id.like);
+        ParseQuery<ParseObject> query1=ParseQuery.getQuery("Image");
+        query1.whereEqualTo("objectId",currentNumberPosition.getPostid());
+        query1.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    if (objects.size() ==1) {
+                        ParseObject object= objects.get(0);
+                        if (object.getList("Likedby").contains(ParseUser.getCurrentUser().getUsername())) {
+                            button.setImageResource(R.drawable.readheart);
+                        } else {
+                            button.setImageResource(R.drawable.heart);
+                        }
 
-        return currentItemView;
+                    }
+                }
             }
-        }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    //likes = currentNumberPosition.getLikes();
+                                    likedby = currentNumberPosition.getLikes();
+                                    //likes=likedby.size();
+                                    //textView2.setText(likes + " liked this post");
+                                    ParseQuery<ParseObject> query1 = ParseQuery.getQuery("Image");
+                                    query1.whereEqualTo("objectId", currentNumberPosition.getPostid());
+                                    query1.findInBackground(new FindCallback<ParseObject>() {
+                                        @Override
+                                        public void done(List<ParseObject> objects, ParseException e) {
+                                            if (e == null) {
+                                                if (objects.size() == 1) {
+                                                    ParseObject object = objects.get(0);
+                                                        if (object.getList("Likedby").contains(ParseUser.getCurrentUser().getUsername())) {
+                                                            object.getList("Likedby").remove(ParseUser.getCurrentUser().getUsername());
+                                                            List templikes = object.getList("Likedby");
+                                                            object.remove("Likedby");
+                                                            object.put("Likedby", templikes);
+                                                            button.setImageResource(R.drawable.heart);
+                                                        } else {
+                                                            object.add("Likedby", ParseUser.getCurrentUser().getUsername());
+                                                           button.setImageResource(R.drawable.readheart);
+                                                        }
+                                                        textView2.setText(object.getList("Likedby").size() + " people liked this post");
+                                                        object.saveInBackground();
+                                                        Log.i(object.getString("username"), object.getList("Likedby").toString());
+
+                                                }
+                                            }
+                                        }
+                                    });
+
+                }
+            });
+
+            return currentItemView;
+    }
+}
+
 
 

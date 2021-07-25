@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
@@ -58,14 +59,17 @@ public class HomeFragment  extends Fragment  {
                             @Override
                             public void done(byte[] data, ParseException e) {
                                 if (e == null && data != null) {
-                                    Log.i("user", object.getString("username"));
-                                    int likes=object.getInt("likes");
-                                    Log.i("postid",object.getObjectId());
+                                    //Log.i("user", object.getString("username"));
+                                    List<String> likedby=object.getList("Likedby");
+                                    //Log.i("likes",likedby.toString());
+                                    //int likes=object.getInt("likes");
+                                    //Log.i("postid",object.getObjectId());
                                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                    arrayList.add(new userpost(object.getString("username"), bitmap,likes,object.getObjectId()));
-                                    adapter = new customUserPostView(view.getContext(), arrayList); ;
+                                    arrayList.add(new userpost(object.getString("username"), bitmap,likedby,object.getObjectId()));
+                                    adapter = new customUserPostView(view.getContext(), arrayList);
                                     listview.setAdapter(adapter);
                                 }
+
                             }
                         });
                     }
