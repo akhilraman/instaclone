@@ -16,12 +16,21 @@ public class userpost {
     String u_name;
     Bitmap image;
     List<String> likedby;
+    List<String> commentby;
     String postid;
-    public userpost(String u,Bitmap i,List<String> l,String p){
+    public userpost(String u,Bitmap i,List<String> l,List<String> c,String p){
         u_name=u;
         image=i;
         likedby=l;
+        commentby=c;
         postid=p;
+    }
+
+    public List<String> getCommentby() {
+        return commentby;
+    }
+    public void setCommentby(List<String> commentby) {
+        this.commentby = commentby;
     }
     public Bitmap getImage(){
         return image;

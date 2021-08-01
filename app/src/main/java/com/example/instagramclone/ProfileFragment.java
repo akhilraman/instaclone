@@ -2,6 +2,7 @@ package com.example.instagramclone;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -28,7 +30,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ProfileFragment  extends Fragment {
     ListView listview;
@@ -45,11 +49,10 @@ public class ProfileFragment  extends Fragment {
         Bundle bundle = this.getArguments();
         profile = bundle.getString("profile", "ok");
         return inflater.inflate(R.layout.fragment_profile,container,false);
-
-
         //return super.onCreateView(inflater, container, savedInstanceState);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onViewCreated(@NonNull  View view, @Nullable  Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -61,13 +64,23 @@ public class ProfileFragment  extends Fragment {
         follower_count=view.findViewById(R.id.followercount);
         userid.setText(profile);
         ImageView profilepic=view.findViewById(R.id.profilepic);
+        profilepic.setClipToOutline(true);
         arrayList = new ArrayList<userpost>();
 
         //to show dialogue box of following
         following_count.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                liked_popup lp=new liked_popup(profile);
+                liked_popup lp=new liked_popup(profile,"Following");
+                lp.show(requireActivity().getSupportFragmentManager(), "this");
+                Toast.makeText(getContext(), "hi", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        follower_count.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                liked_popup lp=new liked_popup(profile,"Followers");
                 lp.show(requireActivity().getSupportFragmentManager(), "this");
                 Toast.makeText(getContext(), "hi", Toast.LENGTH_SHORT).show();
             }
@@ -98,24 +111,33 @@ public class ProfileFragment  extends Fragment {
                     }
                 });
             }
-             /*ParseQuery<ParseUser> query4=ParseUser.getQuery();
+             ParseQuery<ParseUser> query4=ParseUser.getQuery();
              query4.findInBackground(new FindCallback<ParseUser>() {
                  @Override
                  public void done(List<ParseUser> objects, ParseException e) {
                      if(e==null &&objects.size()>0){
-                         //ParseUser.getCurrentUser().getList("Followers").clear();
                          for(ParseUser user:objects){
+
+                             //user.put("Followers",tempFollowers);
                              if(user.getList("Following").contains(ParseUser.getCurrentUser().getUsername())){
-                                 //ParseUser.getCurrentUser().add("Followers",user.getUsername());
+                                 ParseUser.getCurrentUser().add("Followers",user.getUsername());
+                                 List tempFollowers=ParseUser.getCurrentUser().getList("Followers");
+                                 Set<String> hSet = new HashSet<String>(tempFollowers);
+                                 hSet.addAll(tempFollowers);
+                                 List newFollowers=new ArrayList(hSet);
+                                 Log.i("wow",newFollowers.toString());
+                                 ParseUser.getCurrentUser().remove("Followers");
+                                 ParseUser.getCurrentUser().put("Followers",newFollowers);
                              }
+                             ParseUser.getCurrentUser().saveInBackground();
                          }
                      }
                      Log.i(ParseUser.getCurrentUser().getUsername()+"followers are",ParseUser.getCurrentUser().getList("Followers").toString());
-                     ParseUser.getCurrentUser().saveInBackground();
+
                  }
-             });*/
-            //int followers=ParseUser.getCurrentUser().getList("Followers").size();
-           //follower_count.setText(followers+"");
+             });
+            int followers=ParseUser.getCurrentUser().getList("Followers").size();
+            follower_count.setText(followers+"");
             follow_edit.setText("Edit Profile");
             follow_edit.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -142,6 +164,8 @@ public class ProfileFragment  extends Fragment {
                     if(e==null){
                         for(ParseUser user:objects){
                             int following=user.getList("Following").size();
+                            int followers=user.getList("Followers").size();
+                            follower_count.setText(followers+"");
                             following_count.setText(following+"");
                             if(user.get("profilepicture")==null){
                                 profilepic.setImageResource(R.drawable.like);
@@ -268,11 +292,12 @@ public class ProfileFragment  extends Fragment {
                                 if (e == null && data != null) {
                                     Log.i("user", object.getString("username"));
                                     List<String> likedby=object.getList("Likedby");
+                                    List<String> commentby=object.getList("comments");
                                     Log.i("likes",likedby.toString());
                                     //int likes=object.getInt("likes");
                                     Log.i("postid",object.getObjectId());
                                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                    arrayList.add(new userpost(object.getString("username"), bitmap,likedby,object.getObjectId()));
+                                    arrayList.add(new userpost(object.getString("username"), bitmap,likedby,commentby,object.getObjectId()));
                                     adapter = new customUserPostView(view.getContext(), arrayList); ;
                                     listview.setAdapter(adapter);
                                 }

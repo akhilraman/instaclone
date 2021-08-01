@@ -29,13 +29,29 @@ private ActionBarDrawerToggle toggle;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_page);
 
-        /*drawerLayout=(DrawerLayout)findViewById(R.id.drawerLayout);
+        drawerLayout=(DrawerLayout)findViewById(R.id.drawerLayout);
         toggle=new ActionBarDrawerToggle(this,drawerLayout,R.string.open,R.string.close);
         NavigationView sidebar=findViewById(R.id.sidebar);
         drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();*/
+        toggle.syncState();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        sidebar.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull  MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.Logout:
+                        //Toast.makeText(this, "Logged Out", Toast.LENGTH_SHORT).show();
+                        ParseUser.logOut();
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        startActivity(intent);
+                        return true;
+
+                    default:
+                        return false;
+                }
+            }
+        });
 
         BottomNavigationView bottomNav=findViewById(R.id.button_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navlister);
@@ -76,29 +92,24 @@ private ActionBarDrawerToggle toggle;
                 }
             };
 
-    @Override
+   /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.share_menu, menu);
         return super.onCreateOptionsMenu(menu);
-    }
+    }*/
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        super.onOptionsItemSelected(item);
-        switch (item.getItemId()) {
-            case R.id.Logout:
-                Toast.makeText(this,"Logged Out", Toast.LENGTH_SHORT).show();
-                ParseUser.logOut();
-                Intent intent= new Intent(this,MainActivity.class);
-                startActivity(intent);
-                return true;
 
-            default:
-                return false;
+        if (toggle.onOptionsItemSelected(item)) {
+            return true;
         }
-    }
+        super.onOptionsItemSelected(item);
+
+        return false;
+        }
 
 
 

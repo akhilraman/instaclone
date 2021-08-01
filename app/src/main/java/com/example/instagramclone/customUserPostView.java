@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -71,58 +72,33 @@ public class customUserPostView extends ArrayAdapter<userpost>  {
         //postimage.setImageResource(R.drawable.instalogo);
         TextView textView1 = currentItemView.findViewById(R.id.textView);
         textView1.setText(currentNumberPosition.getU_name());
+        List<String> no_likes=currentNumberPosition.getLikes();
+        ImageView comment=currentItemView.findViewById(R.id.comment);
+        comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                commentpopup cp=new commentpopup(currentNumberPosition.getPostid(),currentNumberPosition.getCommentby());
+                cp.show(((FragmentActivity)getContext()).getSupportFragmentManager(), "this");
+            }
+        });
         textView2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ParseQuery<ParseObject> query=ParseQuery.getQuery("Image");
-                query.whereEqualTo("objectId",currentNumberPosition.getPostid());
-                Log.i("this",currentNumberPosition.getPostid());
-                query.findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
-                        if(e==null){
-                            List liked=new ArrayList();
-                            if(objects.size()>0){
-                                for(ParseObject object:objects){
-                                    liked=object.getList("Likedby");
-
-                                }
-                                /*liked_popup lp=new liked_popup();
-                                lp.show(getActivity().getSupportFragmentManager(), "this");*/
-                                Toast.makeText(getContext(), liked.toString(), Toast.LENGTH_SHORT).show();
-                            }
-
-
-                        }
-
-                    }
-
-                });
-
-
+                 likedby_popup cp=new likedby_popup(currentNumberPosition.getPostid(),currentNumberPosition.getLikes());
+                cp.show(((FragmentActivity)getContext()).getSupportFragmentManager(), "this");
             }
         });
-        List<String> no_likes=currentNumberPosition.getLikes();
+
+
         textView2.setText(no_likes.size()+" people liked this post");
         ImageView button=currentItemView.findViewById(R.id.like);
-        ParseQuery<ParseObject> query1=ParseQuery.getQuery("Image");
-        query1.whereEqualTo("objectId",currentNumberPosition.getPostid());
-        query1.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    if (objects.size() ==1) {
-                        ParseObject object= objects.get(0);
-                        if (object.getList("Likedby").contains(ParseUser.getCurrentUser().getUsername())) {
-                            button.setImageResource(R.drawable.readheart);
-                        } else {
-                            button.setImageResource(R.drawable.heart);
-                        }
 
-                    }
-                }
-            }
-        });
+        if(no_likes.contains(ParseUser.getCurrentUser().getUsername())){
+            button.setImageResource(R.drawable.readheart);
+        }
+        else{
+            button.setImageResource(R.drawable.heart);
+        }
 
         button.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -131,6 +107,15 @@ public class customUserPostView extends ArrayAdapter<userpost>  {
                                     likedby = currentNumberPosition.getLikes();
                                     //likes=likedby.size();
                                     //textView2.setText(likes + " liked this post");
+                                    if(no_likes.contains(ParseUser.getCurrentUser().getUsername())){
+                                        no_likes.remove(ParseUser.getCurrentUser().getUsername());
+                                        button.setImageResource(R.drawable.heart);
+                                    }
+                                    else{
+                                        no_likes.add(ParseUser.getCurrentUser().getUsername());
+                                        button.setImageResource(R.drawable.readheart);
+                                    }
+                                    textView2.setText(no_likes.size() + " people liked this post");
                                     ParseQuery<ParseObject> query1 = ParseQuery.getQuery("Image");
                                     query1.whereEqualTo("objectId", currentNumberPosition.getPostid());
                                     query1.findInBackground(new FindCallback<ParseObject>() {
@@ -140,19 +125,18 @@ public class customUserPostView extends ArrayAdapter<userpost>  {
                                                 if (objects.size() == 1) {
                                                     ParseObject object = objects.get(0);
                                                         if (object.getList("Likedby").contains(ParseUser.getCurrentUser().getUsername())) {
-                                                            object.getList("Likedby").remove(ParseUser.getCurrentUser().getUsername());
-                                                            List templikes = object.getList("Likedby");
+                                                            /*object.getList("Likedby").remove(ParseUser.getCurrentUser().getUsername());
+                                                            List templikes = object.getList("Likedby");*/
                                                             object.remove("Likedby");
-                                                            object.put("Likedby", templikes);
-                                                            button.setImageResource(R.drawable.heart);
+                                                            object.put("Likedby",no_likes);
+                                                            //button.setImageResource(R.drawable.heart);
                                                         } else {
                                                             object.add("Likedby", ParseUser.getCurrentUser().getUsername());
-                                                           button.setImageResource(R.drawable.readheart);
+                                                           //button.setImageResource(R.drawable.readheart);
                                                         }
-                                                        textView2.setText(object.getList("Likedby").size() + " people liked this post");
+                                                        //textView2.setText(object.getList("Likedby").size() + " people liked this post");
                                                         object.saveInBackground();
                                                         Log.i(object.getString("username"), object.getList("Likedby").toString());
-
                                                 }
                                             }
                                         }

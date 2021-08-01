@@ -90,7 +90,9 @@
             android:layout_height="150dp"
             app:layout_column="0"
             app:layout_row="0"
-            app:srcCompat="@drawable/readheart" />
+            android:src="@drawable/readheart"
+            android:background="@drawable/img"
+            android:outlineProvider="background"/>
 
     </androidx.gridlayout.widget.GridLayout>
 

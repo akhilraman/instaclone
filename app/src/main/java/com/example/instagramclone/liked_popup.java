@@ -27,13 +27,14 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
-
+//USED TO FOLLOWERS !!!!!
 public class liked_popup extends DialogFragment {
     @Nullable
     String key;
     List following;
-    liked_popup(String key){
-        this.key=key;
+    String following_follower;
+    liked_popup(String key,String f){
+        this.key=key;this.following_follower=f;
     }
 
     @Override
@@ -49,7 +50,7 @@ public class liked_popup extends DialogFragment {
         Log.i("key",key);
         ListView followinglist=view.findViewById(R.id.likedlist);
         if(key.equals(ParseUser.getCurrentUser().getUsername())){
-            following=ParseUser.getCurrentUser().getList("Following");
+            following=ParseUser.getCurrentUser().getList(following_follower);
             ArrayAdapter adapter = new ArrayAdapter<String>(getActivity(), R.layout.support_simple_spinner_dropdown_item, following);
             followinglist.setAdapter(adapter);
         }
@@ -63,7 +64,7 @@ public class liked_popup extends DialogFragment {
                     if(e==null){
                         List following_profile=new ArrayList();
                         for(ParseUser user:objects){
-                           following_profile=user.getList("Following");
+                           following_profile=user.getList(following_follower);
                            Log.i("list",following_profile.toString());
                         }
                         ArrayAdapter adapter = new ArrayAdapter<String>(getContext(), R.layout.support_simple_spinner_dropdown_item,following_profile);

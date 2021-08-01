@@ -61,11 +61,12 @@ public class HomeFragment  extends Fragment  {
                                 if (e == null && data != null) {
                                     //Log.i("user", object.getString("username"));
                                     List<String> likedby=object.getList("Likedby");
+                                    List<String>commentby=object.getList("comments");
                                     //Log.i("likes",likedby.toString());
                                     //int likes=object.getInt("likes");
                                     //Log.i("postid",object.getObjectId());
                                     Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                    arrayList.add(new userpost(object.getString("username"), bitmap,likedby,object.getObjectId()));
+                                    arrayList.add(new userpost(object.getString("username"), bitmap,likedby,commentby,object.getObjectId()));
                                     adapter = new customUserPostView(view.getContext(), arrayList);
                                     listview.setAdapter(adapter);
                                 }
