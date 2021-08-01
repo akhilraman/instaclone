@@ -41,7 +41,6 @@ public class liked_popup extends DialogFragment {
     public View onCreateView(@NonNull  LayoutInflater inflater, @Nullable  ViewGroup container, @Nullable  Bundle savedInstanceState) {
         super.onCreateView(inflater,container,savedInstanceState);
          return inflater.inflate(R.layout.likedby_popup,container,false);
-
     }
 
     @Override
@@ -67,6 +66,7 @@ public class liked_popup extends DialogFragment {
                            following_profile=user.getList(following_follower);
                            Log.i("list",following_profile.toString());
                         }
+                        following=following_profile;
                         ArrayAdapter adapter = new ArrayAdapter<String>(getContext(), R.layout.support_simple_spinner_dropdown_item,following_profile);
                         followinglist.setAdapter(adapter);
                     }
@@ -79,11 +79,11 @@ public class liked_popup extends DialogFragment {
         followinglist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getContext(), following.get(position).toString(), Toast.LENGTH_SHORT).show();
-                Fragment selectedFragment=new ProfileFragment();
-                Bundle bundle = new Bundle();
+                //Toast.makeText(getContext(), following.get(position).toString(), Toast.LENGTH_SHORT).show();
+                Fragment selectedFragment=new ProfileFragment(following.get(position).toString());
+                /*Bundle bundle = new Bundle();
                 bundle.putString("profile",following.get(position).toString());
-                selectedFragment.setArguments(bundle);
+                selectedFragment.setArguments(bundle);*/
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.Fragment_container,selectedFragment);
                 transaction.addToBackStack(null);

@@ -46,10 +46,10 @@ public class ExploreFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(getContext(), users.get(position), Toast.LENGTH_SHORT).show();
-                 Fragment selectedFragment=new ProfileFragment();
-                Bundle bundle = new Bundle();
+                 Fragment selectedFragment=new ProfileFragment(users.get(position));
+                /*Bundle bundle = new Bundle();
                 bundle.putString("profile",users.get(position));
-                selectedFragment.setArguments(bundle);
+                selectedFragment.setArguments(bundle);*/
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(R.id.Fragment_container,selectedFragment);
                 transaction.addToBackStack(null);

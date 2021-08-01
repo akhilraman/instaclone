@@ -73,10 +73,10 @@ private ActionBarDrawerToggle toggle;
                             selectedFragment=new ExploreFragment();
                             break;
                         case R.id.profile:
-                            selectedFragment=new ProfileFragment();
-                            Bundle bundle = new Bundle();
+                            selectedFragment=new ProfileFragment(ParseUser.getCurrentUser().getUsername());
+                            /*Bundle bundle = new Bundle();
                             bundle.putString("profile",ParseUser.getCurrentUser().getUsername());
-                            selectedFragment.setArguments(bundle);
+                            selectedFragment.setArguments(bundle);*/
                             break;
                         case R.id.upload:
                             if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {

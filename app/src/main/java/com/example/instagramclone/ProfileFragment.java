@@ -42,12 +42,16 @@ public class ProfileFragment  extends Fragment {
     String profile;
     Button follow_edit ;
     TextView following_count,follower_count;
+
+    ProfileFragment(String profile){
+        this.profile=profile;
+    }
     @Nullable
 
     @Override
     public View onCreateView(@NonNull  LayoutInflater inflater, @Nullable  ViewGroup container, @Nullable  Bundle savedInstanceState) {
-        Bundle bundle = this.getArguments();
-        profile = bundle.getString("profile", "ok");
+       /* Bundle bundle = this.getArguments();
+        profile = bundle.getString("profile", "ok");*/
         return inflater.inflate(R.layout.fragment_profile,container,false);
         //return super.onCreateView(inflater, container, savedInstanceState);
     }
