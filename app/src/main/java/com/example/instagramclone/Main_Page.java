@@ -52,8 +52,7 @@ private ActionBarDrawerToggle toggle;
                 }
             }
         });
-
-        BottomNavigationView bottomNav=findViewById(R.id.button_navigation);
+BottomNavigationView bottomNav=findViewById(R.id.button_navigation);
         bottomNav.setOnNavigationItemSelectedListener(navlister);
         getSupportFragmentManager().beginTransaction().replace(R.id.Fragment_container,new HomeFragment()).commit();
     }

@@ -1,11 +1,13 @@
 package com.example.instagramclone;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,9 +20,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.material.navigation.NavigationView;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -42,6 +48,8 @@ public class ProfileFragment  extends Fragment {
     String profile;
     Button follow_edit ;
     TextView following_count,follower_count;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle toggle;
 
     ProfileFragment(String profile){
         this.profile=profile;
@@ -60,6 +68,32 @@ public class ProfileFragment  extends Fragment {
     @Override
     public void onViewCreated(@NonNull  View view, @Nullable  Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //to logout - side bar
+        /*drawerLayout=(DrawerLayout)view.findViewById(R.id.drawerLayout);
+        toggle=new ActionBarDrawerToggle((AppCompatActivity)getActivity(),drawerLayout,R.string.open,R.string.close);
+        NavigationView sidebar=view.findViewById(R.id.sidebar);
+      drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        sidebar.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.Logout:
+                        //Toast.makeText(this, "Logged Out", Toast.LENGTH_SHORT).show();
+                        ParseUser.logOut();
+                        Intent intent = new Intent(getContext(), MainActivity.class);
+                        startActivity(intent);
+                        return true;
+
+                    default:
+                        return false;
+                }
+            }
+        });*/
+
         listview=view.findViewById(R.id.listview2);
         TextView profile_bio=view.findViewById(R.id.profile_bio);
         follow_edit=view.findViewById(R.id.followedit);
@@ -121,7 +155,6 @@ public class ProfileFragment  extends Fragment {
                  public void done(List<ParseUser> objects, ParseException e) {
                      if(e==null &&objects.size()>0){
                          for(ParseUser user:objects){
-
                              //user.put("Followers",tempFollowers);
                              if(user.getList("Following").contains(ParseUser.getCurrentUser().getUsername())){
                                  ParseUser.getCurrentUser().add("Followers",user.getUsername());

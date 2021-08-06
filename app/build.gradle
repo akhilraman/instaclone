@@ -40,5 +40,7 @@ dependencies {
     //parse
     implementation 'com.parse.bolts:bolts-tasks:1.4.0'
     implementation 'com.parse:parse-android:1.13.0'
+    //circular image view
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
 
 }
